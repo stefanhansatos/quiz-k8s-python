@@ -52,6 +52,12 @@ echo "Creating Cloud Spanner Instance, Database, and Table"
 gcloud spanner instances create quiz-instance --config=regional-europe-west3 --description="Quiz instance" --nodes=1
 gcloud spanner databases create quiz-database --instance quiz-instance --ddl "CREATE TABLE Feedback ( feedbackId STRING(100) NOT NULL, email STRING(100), quiz STRING(20), feedback STRING(MAX), rating INT64, score FLOAT64, timestamp INT64 ) PRIMARY KEY (feedbackId);"
 
+echo "Enabling Cloud Functions API"
+gcloud services enable cloudfunctions.googleapis.com
+
+echo "Creating Cloud Function"
+gcloud functions deploy process-feedback --runtime nodejs8 --trigger-topic feedback --source ./function --stage-bucket $GCLOUD_BUCKET --entry-point subscribe
+
 echo "Creating Container Engine cluster"
 gcloud container clusters create quiz-cluster --zone europe-west3-a --scopes cloud-platform
 gcloud container clusters get-credentials quiz-cluster --zone europe-west3-a
