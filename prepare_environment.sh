@@ -15,7 +15,7 @@
 # limitations under the License.
 
 echo "Creating Datastore/App Engine instance"
-gcloud app create --region "us-central"
+gcloud app create --region "europe-west"
 
 echo "Creating bucket: gs://$DEVSHELL_PROJECT_ID-media"
 gsutil mb gs://$DEVSHELL_PROJECT_ID-media
@@ -49,12 +49,12 @@ gcloud pubsub topics create feedback
 gcloud pubsub subscriptions create worker-subscription --topic feedback
 
 echo "Creating Cloud Spanner Instance, Database, and Table"
-gcloud spanner instances create quiz-instance --config=regional-us-central1 --description="Quiz instance" --nodes=1
+gcloud spanner instances create quiz-instance --config=regional-europe-west3 --description="Quiz instance" --nodes=1
 gcloud spanner databases create quiz-database --instance quiz-instance --ddl "CREATE TABLE Feedback ( feedbackId STRING(100) NOT NULL, email STRING(100), quiz STRING(20), feedback STRING(MAX), rating INT64, score FLOAT64, timestamp INT64 ) PRIMARY KEY (feedbackId);"
 
 echo "Creating Container Engine cluster"
-gcloud container clusters create quiz-cluster --zone us-central1-a --scopes cloud-platform
-gcloud container clusters get-credentials quiz-cluster --zone us-central1-a
+gcloud container clusters create quiz-cluster --zone europe-west3-a --scopes cloud-platform
+gcloud container clusters get-credentials quiz-cluster --zone europe-west3-a
 
 echo "Building Containers"
 gcloud container builds submit -t gcr.io/$DEVSHELL_PROJECT_ID/quiz-frontend ./frontend/
